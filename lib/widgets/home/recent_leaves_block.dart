@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_mobile/models/leave.dart';
+import 'package:fyp_mobile/services/auth_service.dart';
+import 'package:fyp_mobile/services/leaves_service.dart';
 import 'package:fyp_mobile/themes/colors.dart';
-import 'package:fyp_mobile/themes/spacing.dart';
 import 'package:fyp_mobile/widgets/home/recent_leaves_card.dart';
 
 class RecentLeavesBlock extends StatefulWidget {
@@ -11,6 +13,68 @@ class RecentLeavesBlock extends StatefulWidget {
 }
 
 class _RecentLeavesBlockState extends State<RecentLeavesBlock> {
+  String _name = "";
+  String _email = "";
+
+  bool _isLoading = true;
+
+  List<Leave> leavesList = [];
+
+  final _leavesService = LeavesService();
+  final _authService = AuthService();
+
+  Future<void> _getName() async {
+    try {
+      final name = await _authService.getUserName();
+      if (mounted) {
+        setState(() {
+          _name = name;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<void> _handleLeaves() async {
+    try {
+      final email = await _authService.getUserEmail();
+
+      var leaves = await _leavesService.getLeavesByUser(email);
+
+      leaves = leaves.reversed.toList();
+      if (mounted) {
+        setState(() {
+          leavesList = leaves;
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print(e.toString());
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+        });
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Request failed!"),
+          backgroundColor: AppColors.errorColor,
+        ),
+      );
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _getName();
+    // _getEmail();
+    _handleLeaves();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -32,44 +96,31 @@ class _RecentLeavesBlockState extends State<RecentLeavesBlock> {
                 child: const Text(
                   'View All',
                   style: TextStyle(
-                      color: AppColors.primaryColor, fontWeight: FontWeight.bold),
+                      color: AppColors.primaryColor,
+                      fontWeight: FontWeight.bold),
                 ))
           ],
         ),
         const SizedBox(
           height: 16,
         ),
-        const Align(
+        Align(
           alignment: Alignment.topLeft,
           child: Padding(
             padding: EdgeInsets.all(4.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                RecentLeavesCard(
-                  title: '23/10/16 to 23/10/18',
-                  status: "Approved",
-                  icon: Icons.done,
-                ),
-                SizedBox(
-                  height: defaultTextFieldHeightSpacing,
-                ),
-                RecentLeavesCard(
-                  title: '23/10/16 to 23/10/18',
-                  status: "Rejected",
-                  icon: Icons.more_horiz_rounded,
-                ),
-                SizedBox(
-                  height: defaultTextFieldHeightSpacing,
-                ),
-                RecentLeavesCard(
-                  title: '23/10/16 to 23/10/18',
-                  status: "Pending",
-                  icon: Icons.close,
-                ),
-                SizedBox(
-                  height: defaultTextFieldHeightSpacing,
-                ),
+                for (var leave in leavesList.take(3))
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 16.0),
+                    child: RecentLeavesCard(
+                      title:
+                          "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
+                      status: leave.status,
+                      icon: Icons.done,
+                    ),
+                  ),
               ],
             ),
           ),

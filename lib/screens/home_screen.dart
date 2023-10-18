@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_mobile/services/auth_service.dart';
 import 'package:fyp_mobile/themes/colors.dart';
-import 'package:fyp_mobile/widgets/common/custom_appbar.dart';
 import 'package:fyp_mobile/widgets/home/home_quick_access_block.dart';
 import 'package:fyp_mobile/widgets/home/home_stat_card.dart';
 import 'package:fyp_mobile/widgets/home/recent_leaves_block.dart';
@@ -11,6 +11,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  final _authService = AuthService();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,14 +28,22 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         automaticallyImplyLeading: false, // This hides the back button
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.exit_to_app_rounded,
-              color: AppColors.textColorDark,
-            ),
-            onPressed: () {
-              // _showSwitchProfilePopup(context);
+        actions: [
+          PopupMenuButton(
+            icon: const Icon(Icons.account_circle, color: Colors.white),
+            itemBuilder: (BuildContext context) {
+              return [
+                const PopupMenuItem(
+                  value: 1,
+                  child: Text('Logout'),
+                ),
+              ];
+            },
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  _authService.logout(context);
+              }
             },
           ),
         ],

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fyp_mobile/services/auth_service.dart';
 // import 'package:fyp_mobile/services/auth_services.dart';
 import 'package:fyp_mobile/themes/colors.dart';
 import 'package:fyp_mobile/widgets/common/main_btn.dart';
@@ -19,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   final _passwordController = TextEditingController();
 
-  // final _authService = AuthService();
+  final _authService = AuthService();
 
   bool _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
@@ -34,6 +35,41 @@ class _LoginScreenState extends State<LoginScreen> {
       return false;
     } else {
       return true;
+    }
+  }
+
+  Future<void> _handleLogin() async {
+    if (_validateEmail(_emailController.text) &&
+        _validatePassword(_passwordController.text)) {
+      try {
+        await _authService.login(
+            _emailController.text, _passwordController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login successful!",
+                style: TextStyle(color: AppColors.textColorDark)),
+            backgroundColor: AppColors.primaryColor,
+          ),
+        );
+        // Navigate to login page
+        Navigator.pushReplacementNamed(context, '/home');
+      } catch (e) {
+        // Signup failed, show error message or handle the error
+        print(e);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Login failed!"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Email and password is required!"),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -126,49 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   title: 'Sign In',
                                   btnColor: AppColors.primaryColor,
                                   onPressed: () async {
-
-                                    Navigator.pushReplacementNamed(
-                                            context, '/home');
-                                    // if (_validateEmail(_emailController.text) &&
-                                    //     _validatePassword(
-                                    //         _passwordController.text)) {
-                                    //   try {
-                                    //     await _authService.login(
-                                    //         _emailController.text,
-                                    //         _passwordController.text);
-                                    //     ScaffoldMessenger.of(context)
-                                    //         .showSnackBar(
-                                    //       const SnackBar(
-                                    //         content: Text("Login successful!",
-                                    //             style: TextStyle(
-                                    //                 color:
-                                    //                     AppColors.textColorDark)),
-                                    //         backgroundColor:
-                                    //             AppColors.primaryColor,
-                                    //       ),
-                                    //     );
-                                    //     // Navigate to login page
-                                    //     Navigator.pushReplacementNamed(
-                                    //         context, '/');
-                                    //   } catch (e) {
-                                    //     // Signup failed, show error message or handle the error
-                                    //     ScaffoldMessenger.of(context)
-                                    //         .showSnackBar(
-                                    //       const SnackBar(
-                                    //         content: Text("Login failed!"),
-                                    //         backgroundColor: Colors.red,
-                                    //       ),
-                                    //     );
-                                    //   }
-                                    // } else {
-                                    //   ScaffoldMessenger.of(context).showSnackBar(
-                                    //     const SnackBar(
-                                    //       content: Text(
-                                    //           "Email and password is required!"),
-                                    //       backgroundColor: Colors.red,
-                                    //     ),
-                                    //   );
-                                    // }
+                                    _handleLogin();
                                   },
                                   txtColor: AppColors.textColorDark,
                                 ),

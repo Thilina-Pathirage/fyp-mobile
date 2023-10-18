@@ -4,14 +4,15 @@ import 'package:fyp_mobile/services/auth_service.dart';
 import 'package:fyp_mobile/services/leaves_service.dart';
 import 'package:fyp_mobile/themes/colors.dart';
 
-class CreateLeavePopup extends StatefulWidget {
-  const CreateLeavePopup({super.key});
+class UpdateLeavePopup extends StatefulWidget {
+  final Leave leave;
+  const UpdateLeavePopup({super.key, required this.leave});
 
   @override
-  State<CreateLeavePopup> createState() => _CreateLeavePopupState();
+  State<UpdateLeavePopup> createState() => _UpdateLeavePopupState();
 }
 
-class _CreateLeavePopupState extends State<CreateLeavePopup> {
+class _UpdateLeavePopupState extends State<UpdateLeavePopup> {
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   final TextEditingController requestedUserReasonController =
@@ -20,11 +21,10 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
   final _authService = AuthService();
   final _leavesService = LeavesService();
 
-  Future<void> _handleCreateLeave() async {
-    final email = await _authService.getUserEmail();
+  Future<void> _handleUpdateLeave() async {
+    final leavID = widget.leave.id;
     final startDate = selectedStartDate.toString();
     final endDate = selectedEndDate.toString();
-    final requestedDate = DateTime.now().toString();
     final reason = requestedUserReasonController.text;
 
     if (selectedStartDate == null ||
@@ -38,31 +38,24 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
       );
     } else {
       try {
-        await _leavesService.createLeave(
-          startDate,
-          endDate,
-          requestedDate,
-          email,
-          reason,
-        );
+        await _leavesService.updateLeave(leavID, startDate, endDate, reason);
 
         // Handle successful leave creation here
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Leave created successfully!"),
+            content: Text("Leave updated successfully!"),
             backgroundColor: AppColors.primaryColor,
           ),
         );
         Navigator.of(context).pop();
         Navigator.pushReplacementNamed(context, '/home');
 
-
         // You can use `createdLeave` if you want to access the created leave details
       } catch (e) {
         // Handle any exceptions that occur during leave creation
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text("Failed to create leave"),
+            content: Text("Failed to update leave"),
             backgroundColor: Colors.red,
           ),
         );
@@ -73,7 +66,7 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Request Leave'),
+      title: const Text('Update Leave'),
       content: Form(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -93,8 +86,8 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
                   onPressed: () {
                     showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
+                      initialDate: widget.leave.startDate,
+                      firstDate: DateTime(2021),
                       lastDate: DateTime(2101),
                     ).then((pickedDate) {
                       if (pickedDate != null) {
@@ -133,8 +126,8 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
                   onPressed: () {
                     showDatePicker(
                       context: context,
-                      initialDate: DateTime.now(),
-                      firstDate: DateTime.now(),
+                      initialDate: widget.leave.endDate,
+                      firstDate: DateTime(2021),
                       lastDate: DateTime(2101),
                     ).then((pickedDate) {
                       if (pickedDate != null) {
@@ -159,8 +152,8 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
 
             TextFormField(
               controller: requestedUserReasonController,
-              decoration:
-                  const InputDecoration(labelText: 'Reason for Request'),
+              // initialValue: widget.leave.reason ?? "",
+              decoration: const InputDecoration(labelText: 'Reason for Leave'),
             ),
           ],
         ),
@@ -175,7 +168,7 @@ class _CreateLeavePopupState extends State<CreateLeavePopup> {
         ElevatedButton(
           onPressed: () async {
             // Add the new leave to the list and close the dialog
-            _handleCreateLeave();
+            _handleUpdateLeave();
           },
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
