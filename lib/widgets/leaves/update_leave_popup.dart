@@ -66,7 +66,7 @@ class _UpdateLeavePopupState extends State<UpdateLeavePopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Update Leave'),
+      title: const Text('Update Leave', style: TextStyle(fontWeight: FontWeight.bold)),
       content: Form(
         child: Column(
           mainAxisSize: MainAxisSize.min,

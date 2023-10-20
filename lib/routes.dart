@@ -16,7 +16,9 @@ class Routes {
         return MaterialPageRoute(builder: (_) => const LeavesScreen());
       case '/complaints':
         return MaterialPageRoute(builder: (_) => const ComplaintsScreen());
-          case '/survey':
+      case '/survey':
+        return MaterialPageRoute(builder: (_) => const SurveyScreen());
+      case '/loading':
         return MaterialPageRoute(builder: (_) => const SurveyScreen());
 
       default:

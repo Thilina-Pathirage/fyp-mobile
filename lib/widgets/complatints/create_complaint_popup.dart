@@ -22,12 +22,10 @@ class _CreateComplaintPopupState extends State<CreateComplaintPopup> {
   Future<void> _handleCreateComplaint() async {
     final email = await _authService.getUserEmail();
 
-      final title = titleController.text;
-      final desc = descriptionController.text;
+    final title = titleController.text;
+    final desc = descriptionController.text;
 
     if (titleController.text.isEmpty || descriptionController.text.isEmpty) {
-    
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("All fields are required!"),
@@ -68,7 +66,8 @@ class _CreateComplaintPopupState extends State<CreateComplaintPopup> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Make Complaint'),
+      title: const Text('Make Complaint',
+          style: TextStyle(fontWeight: FontWeight.bold)),
       content: Form(
         child: Column(
           mainAxisSize: MainAxisSize.min,

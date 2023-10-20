@@ -86,7 +86,91 @@ class AuthService {
       throw Exception('Failed to login: $e');
     }
   }
-  
+
+  Future<List<String>> getUserMentalHealth(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/users/by-email/$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(response.body);
+        final recommendations =
+            userData['mentalHealthStatus']['recommendations'].cast<String>();
+
+        return recommendations;
+      } else {
+        throw Exception('Failed to fetch user data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch user data: $e');
+    }
+  }
+
+  Future<String> getMentalStatus(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/users/by-email/$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(response.body);
+        final prediction = userData['mentalHealthStatus']['prediction'];
+
+
+        final prefs = await SharedPreferences.getInstance();
+
+        final mentalHealthStatus = userData['mentalHealthStatus'];
+        await prefs.setString('healthStatus', mentalHealthStatus['prediction']);
+        return prediction;
+      } else {
+        throw Exception('Failed to fetch healthStatus data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch healthStatus data: $e');
+    }
+  }
+
+  Future<String> submitSurvey({
+    email,
+    workload,
+    workLifeBalance,
+    jobSatisfaction,
+    interpersonalRelationships,
+    jobSecurity,
+    recognitionAndAppreciation,
+    copingMechanisms,
+    physicalSymptoms,
+    mentalFatigue,
+    jobFuture,
+  }) async {
+    final url = Uri.parse('$baseUrl/api/users/take-survey');
+
+    final headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Content-Type': 'application/json',
+    };
+
+    final body = jsonEncode({
+      "email": email,
+      "Workload": workload,
+      "Work-life Balance": workLifeBalance,
+      "Job Satisfaction": jobSatisfaction,
+      "Interpersonal Relationships": interpersonalRelationships,
+      "Job Security": jobSecurity,
+      "Recognition and Appreciation": recognitionAndAppreciation,
+      "Coping Mechanisms": copingMechanisms,
+      "Physical Symptoms": physicalSymptoms,
+      "Mental Fatigue": mentalFatigue,
+      "Job Future": jobFuture,
+    });
+
+    final response = await http.post(url, headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Exception('Failed to submit survey: ${response.statusCode}');
+    }
+  }
 
   Future<void> logout(BuildContext context) async {
     try {
@@ -134,13 +218,23 @@ class AuthService {
     }
   }
 
-    Future<String> getUserEmailFromPrefs() async {
+  Future<String> getUserEmailFromPrefs() async {
     try {
       final prefs = await SharedPreferences.getInstance();
       final String? email = prefs.getString('email');
       return email ?? ''; // return an empty string if token is null
     } catch (e) {
       throw Exception('Error while getting user email: $e');
+    }
+  }
+
+  Future<String> getUserHealthStatusFromPrefs() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final String? healthStatus = prefs.getString('healthStatus');
+      return healthStatus ?? ''; // return an empty string if token is null
+    } catch (e) {
+      throw Exception('Error while getting user health status: $e');
     }
   }
 
@@ -184,8 +278,7 @@ class AuthService {
     }
   }
 
-
-    Future<String> getUserEmail() async {
+  Future<String> getUserEmail() async {
     try {
       final email = await getUserEmailFromPrefs();
       if (email != null && email.isNotEmpty) {
@@ -194,6 +287,18 @@ class AuthService {
       return '';
     } catch (e) {
       throw Exception('Error while getting user name: $e');
+    }
+  }
+
+  Future<String> getUserhealthStatus() async {
+    try {
+      final healthStatus = await getUserHealthStatusFromPrefs();
+      if (healthStatus != null && healthStatus.isNotEmpty) {
+        return healthStatus;
+      }
+      return '';
+    } catch (e) {
+      throw Exception('Error while getting user health status: $e');
     }
   }
 }

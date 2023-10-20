@@ -4,6 +4,7 @@ import 'package:fyp_mobile/services/auth_service.dart';
 import 'package:fyp_mobile/services/leaves_service.dart';
 import 'package:fyp_mobile/themes/colors.dart';
 import 'package:fyp_mobile/widgets/home/recent_leaves_card.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class RecentLeavesBlock extends StatefulWidget {
   const RecentLeavesBlock({super.key});
@@ -73,59 +74,62 @@ class _RecentLeavesBlockState extends State<RecentLeavesBlock> {
     _getName();
     // _getEmail();
     _handleLeaves();
+    _isLoading = true;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Flexible(
-              child: Text(
-                'Recent Leaves',
-                style: TextStyle(fontSize: 16),
-              ),
-            ),
-            TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/leaves');
-                },
-                child: const Text(
-                  'View All',
-                  style: TextStyle(
-                      color: AppColors.primaryColor,
-                      fontWeight: FontWeight.bold),
-                ))
-          ],
-        ),
-        const SizedBox(
-          height: 16,
-        ),
-        Align(
-          alignment: Alignment.topLeft,
-          child: Padding(
-            padding: EdgeInsets.all(4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                for (var leave in leavesList.take(3))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: RecentLeavesCard(
-                      title:
-                          "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
-                      status: leave.status,
-                      icon: Icons.done,
+    return  Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _isLoading
+        ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 40))
+        : Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Flexible(
+                    child: Text(
+                      'Recent Leaves',
+                      style: TextStyle(fontSize: 16),
                     ),
                   ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    );
+                  TextButton(
+                      onPressed: () {
+                        Navigator.pushNamed(context, '/leaves');
+                      },
+                      child: const Text(
+                        'View All',
+                        style: TextStyle(
+                            color: AppColors.primaryColor,
+                            fontWeight: FontWeight.bold),
+                      ))
+                ],
+              ),
+              const SizedBox(
+                height: 16,
+              ),
+              Align(
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(4.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      for (var leave in leavesList.take(3))
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 16.0),
+                          child: RecentLeavesCard(
+                            title:
+                                "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
+                            status: leave.status,
+                            icon: Icons.done,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
   }
 }

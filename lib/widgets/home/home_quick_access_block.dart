@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:fyp_mobile/widgets/home/home_quick_access_card.dart';
+import 'package:fyp_mobile/widgets/home/tips_popup.dart';
 
 class HomeQuickAccessBlock extends StatefulWidget {
-  const HomeQuickAccessBlock({super.key});
+  final List<dynamic>healthTips;
+  const HomeQuickAccessBlock({super.key, required this.healthTips});
 
   @override
   State<HomeQuickAccessBlock> createState() => _HomeQuickAccessBlockState();
@@ -28,8 +30,18 @@ class _HomeQuickAccessBlockState extends State<HomeQuickAccessBlock> {
             child: Row(
               children: [
                 HomeQuickAccessCard(
+                  title: 'Health Tips',
+                  icon: Icons.model_training_rounded,
+                  onPressed: () {
+                    _showTipsDialog(context, widget.healthTips);
+                  },
+                ),
+                const SizedBox(
+                  width: 16,
+                ),
+                HomeQuickAccessCard(
                   title: 'Take Survy',
-                  icon: Icons.document_scanner_outlined,
+                  icon: Icons.insert_drive_file_outlined,
                   onPressed: () {
                     Navigator.pushNamed(context, '/survey');
                   },
@@ -61,6 +73,15 @@ class _HomeQuickAccessBlockState extends State<HomeQuickAccessBlock> {
           ),
         ),
       ],
+    );
+  }
+
+  Future<void> _showTipsDialog(BuildContext context, healthTips) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return TipsPopup(healthTips: healthTips);
+      },
     );
   }
 }

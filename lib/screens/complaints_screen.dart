@@ -7,6 +7,7 @@ import 'package:fyp_mobile/widgets/common/custom_appbar.dart';
 import 'package:fyp_mobile/widgets/common/floating_action_button.dart';
 import 'package:fyp_mobile/widgets/complatints/complatint_card.dart';
 import 'package:fyp_mobile/widgets/complatints/create_complaint_popup.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ComplaintsScreen extends StatefulWidget {
   const ComplaintsScreen({Key? key}) : super(key: key);
@@ -75,24 +76,33 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
         icon: Icons.add,
         iconSize: 26,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(26.0),
-          child: Column(
-            children: [
-              for (var c in complaintsList)
-                Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: ComplaintCard(
-                        title1: c.title,
-                        title2: c.description,
-                        icon: Icons.person,
-                        iconText: c.createdUserEmail,
-                        onPressed: () {})),
-            ],
-          ),
-        ),
-      ),
+      body: _isLoading
+          ? Center(
+              child: LoadingAnimationWidget.fallingDot(
+                  color: AppColors.primaryColor, size: 60))
+          : SingleChildScrollView(
+              child: RefreshIndicator(
+                onRefresh: () async {
+                  _handleComplaints();
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(26.0),
+                  child: Column(
+                    children: [
+                      for (var c in complaintsList)
+                        Padding(
+                            padding: const EdgeInsets.only(bottom: 16.0),
+                            child: ComplaintCard(
+                                title1: c.title,
+                                title2: c.description,
+                                icon: Icons.person,
+                                iconText: c.createdUserEmail,
+                                onPressed: () {})),
+                    ],
+                  ),
+                ),
+              ),
+            ),
     );
   }
 

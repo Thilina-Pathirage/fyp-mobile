@@ -9,6 +9,7 @@ import 'package:fyp_mobile/widgets/common/floating_action_button.dart';
 import 'package:fyp_mobile/widgets/home/recent_leaves_card.dart';
 import 'package:fyp_mobile/widgets/leaves/create_leave_popup.dart';
 import 'package:fyp_mobile/widgets/leaves/update_leave_popup.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class LeavesScreen extends StatefulWidget {
   const LeavesScreen({Key? key}) : super(key: key);
@@ -94,42 +95,47 @@ class _LeavesScreenState extends State<LeavesScreen> {
         icon: Icons.add,
         iconSize: 26,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(26.0),
-          child: Column(
-            children: [
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    filterButton("All"),
-                    filterButton("Approved"),
-                    filterButton("Rejected"),
-                    filterButton("Pending"),
-                  ],
+      body: _isLoading ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 60)) :  SingleChildScrollView(
+        child: RefreshIndicator(
+          onRefresh: () async {
+            _handleLeaves();
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(26.0),
+            child: Column(
+              children: [
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      filterButton("All"),
+                      filterButton("Approved"),
+                      filterButton("Rejected"),
+                      filterButton("Pending"),
+                    ],
+                  ),
                 ),
-              ),
-              const SizedBox(height: defaultTextFieldHeightSpacing),
-              // Display filtered RecentLeavesCard widgets based on the selected filter
-              for (var leave in leavesList)
-                if (selectedFilter == "All" || leave.status == selectedFilter)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 16.0),
-                    child: InkWell(
-                      onLongPress: () {
-                        _showUpdateLeaveDialog(context, leave);
-                      },
-                      child: RecentLeavesCard(
-                        title:
-                            "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
-                        status: leave.status,
-                        icon: Icons.done,
+                const SizedBox(height: defaultTextFieldHeightSpacing),
+                // Display filtered RecentLeavesCard widgets based on the selected filter
+                for (var leave in leavesList)
+                  if (selectedFilter == "All" || leave.status == selectedFilter)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 16.0),
+                      child: InkWell(
+                        onLongPress: () {
+                          _showUpdateLeaveDialog(context, leave);
+                        },
+                        child: RecentLeavesCard(
+                          title:
+                              "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
+                          status: leave.status,
+                          icon: Icons.done,
+                        ),
                       ),
                     ),
-                  ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

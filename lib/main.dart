@@ -64,9 +64,15 @@ class MyApp extends StatelessWidget {
             }
           } else {
             // Show a loading indicator while checking token expiration
-            return LoadingAnimationWidget.halfTriangleDot(
-              color: AppColors.primaryColor,
-              size: 40,
+            return Container(
+              color: Colors.white,
+
+              height: double.infinity,
+              width: double.infinity,
+              child: LoadingAnimationWidget.fallingDot(
+                color: AppColors.primaryColor,
+                size: 60,
+              ),
             );
           }
         },
