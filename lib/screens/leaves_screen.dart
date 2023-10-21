@@ -95,7 +95,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
         icon: Icons.add,
         iconSize: 26,
       ),
-      body: _isLoading ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 60)) :  SingleChildScrollView(
+      body: _isLoading ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 60)) :  leavesList.isNotEmpty ? SingleChildScrollView(
         child: RefreshIndicator(
           onRefresh: () async {
             _handleLeaves();
@@ -138,6 +138,10 @@ class _LeavesScreenState extends State<LeavesScreen> {
             ),
           ),
         ),
+      ) : const Center(
+        child: SizedBox(
+              child: Text('You can apply for leaves'),
+            ),
       ),
     );
   }

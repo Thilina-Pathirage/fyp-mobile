@@ -80,7 +80,7 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
           ? Center(
               child: LoadingAnimationWidget.fallingDot(
                   color: AppColors.primaryColor, size: 60))
-          : SingleChildScrollView(
+          : complaintsList.isNotEmpty ? SingleChildScrollView(
               child: RefreshIndicator(
                 onRefresh: () async {
                   _handleComplaints();
@@ -102,7 +102,11 @@ class ComplaintsScreenState extends State<ComplaintsScreen> {
                   ),
                 ),
               ),
+            ) : const Center(
+        child: SizedBox(
+              child: Text('You can create complaints'),
             ),
+      ),
     );
   }
 

@@ -79,32 +79,35 @@ class _RecentLeavesBlockState extends State<RecentLeavesBlock> {
 
   @override
   Widget build(BuildContext context) {
-    return  Column(
+    return leavesList.isNotEmpty
+        ? Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _isLoading
-        ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 40))
-        : Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Flexible(
-                    child: Text(
-                      'Recent Leaves',
-                      style: TextStyle(fontSize: 16),
+                  ? Center(
+                      child: LoadingAnimationWidget.fallingDot(
+                          color: AppColors.primaryColor, size: 40))
+                  : Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Flexible(
+                          child: Text(
+                            'Recent Leaves',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/leaves');
+                            },
+                            child: const Text(
+                              'View All',
+                              style: TextStyle(
+                                  color: AppColors.primaryColor,
+                                  fontWeight: FontWeight.bold),
+                            ))
+                      ],
                     ),
-                  ),
-                  TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/leaves');
-                      },
-                      child: const Text(
-                        'View All',
-                        style: TextStyle(
-                            color: AppColors.primaryColor,
-                            fontWeight: FontWeight.bold),
-                      ))
-                ],
-              ),
               const SizedBox(
                 height: 16,
               ),
@@ -130,6 +133,11 @@ class _RecentLeavesBlockState extends State<RecentLeavesBlock> {
                 ),
               ),
             ],
-          );
+          )
+        :  const Center(
+          child: SizedBox(
+              child: Text('No recent leaves'),
+            ),
+        );
   }
 }

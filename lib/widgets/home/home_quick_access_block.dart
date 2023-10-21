@@ -26,17 +26,17 @@ class _HomeQuickAccessBlockState extends State<HomeQuickAccessBlock> {
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 16.0, left: 5, right: 8.0),
+            padding: EdgeInsets.only(bottom: 16.0, left: 5, right: 8.0),
             child: Row(
               children: [
-                HomeQuickAccessCard(
+               widget.healthTips.isEmpty ? const SizedBox() : HomeQuickAccessCard(
                   title: 'Health Tips',
                   icon: Icons.model_training_rounded,
                   onPressed: () {
                     _showTipsDialog(context, widget.healthTips);
                   },
                 ),
-                const SizedBox(
+                 widget.healthTips.isEmpty ? const SizedBox() : const SizedBox(
                   width: 16,
                 ),
                 HomeQuickAccessCard(
