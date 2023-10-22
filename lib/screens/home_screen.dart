@@ -19,6 +19,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _workLoad = 'N/A';
   List _healthTips = [];
   String _email = "";
+  String _workStatus = "N/A";
 
   bool _isLoading = true;
 
@@ -34,11 +35,13 @@ class _HomeScreenState extends State<HomeScreen> {
     final healthStatus = await _authService.getMentalStatus(email);
     final workLoad = await _authService.getWorkLoad(email);
     final healthTips = await _authService.getUserMentalHealth(email);
+    final workStatus = await _authService.getWorkStatus(email);
 
     setState(() {
       _healthStatus = healthStatus;
       _workLoad = workLoad;
       _healthTips = healthTips;
+      _workStatus = workStatus;
     });
 
     _isLoading = false;
@@ -168,8 +171,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 AppColors.secondaryColor,
                                           ),
                                           const SizedBox(width: 15.0),
-                                          const HomeStatCard(
-                                            subTitle: 'Busy',
+                                           HomeStatCard(
+                                            subTitle: _workStatus,
                                             title: 'Status',
                                             statBgColor:
                                                 AppColors.secondaryColor,

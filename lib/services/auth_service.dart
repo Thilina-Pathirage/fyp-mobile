@@ -115,21 +115,21 @@ class AuthService {
         final Map<String, dynamic> userData = json.decode(response.body);
         final prediction = userData['mentalHealthStatus']['prediction'];
 
-
         final prefs = await SharedPreferences.getInstance();
 
         final mentalHealthStatus = userData['mentalHealthStatus'];
         await prefs.setString('healthStatus', mentalHealthStatus['prediction']);
         return prediction;
       } else {
-        throw Exception('Failed to fetch healthStatus data: ${response.statusCode}');
+        throw Exception(
+            'Failed to fetch healthStatus data: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to fetch healthStatus data: $e');
     }
   }
 
-    Future<String> getWorkLoad(String email) async {
+  Future<String> getWorkLoad(String email) async {
     try {
       final url = Uri.parse('$baseUrl/api/users/by-email/$email');
       final response = await http.get(url);
@@ -138,16 +138,38 @@ class AuthService {
         final Map<String, dynamic> userData = json.decode(response.body);
         final workLoad = userData['workLoad'];
 
-
         final prefs = await SharedPreferences.getInstance();
 
         await prefs.setString('workLoad', workLoad);
         return workLoad;
       } else {
-        throw Exception('Failed to fetch workLoad data: ${response.statusCode}');
+        throw Exception(
+            'Failed to fetch workLoad data: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to fetch workLoad data: $e');
+    }
+  }
+
+  Future<String> getWorkStatus(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/users/by-email/$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(response.body);
+        final workStatus = userData['workStatus'];
+
+        final prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString('workStatus', workStatus);
+        return workStatus;
+      } else {
+        throw Exception(
+            'Failed to fetch workStatus data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch workStatus data: $e');
     }
   }
 
