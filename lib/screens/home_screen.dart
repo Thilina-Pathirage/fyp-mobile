@@ -81,21 +81,69 @@ class _HomeScreenState extends State<HomeScreen> {
         false;
   }
 
+  Color getHealthStatusColor(String status) {
+    switch (status) {
+      case 'Normal':
+        return const Color.fromARGB(255, 191, 255, 193);
+      case 'Mild':
+        return const Color.fromARGB(255, 255, 250, 209);
+      case 'Moderate':
+        return const Color.fromARGB(255, 255, 239, 215);
+      case 'Severe':
+        return const Color.fromARGB(255, 255, 229, 227);
+      case 'Extremely Severe':
+        return const Color.fromARGB(255, 255, 182, 182);
+      default:
+        return Colors.white; // Default color or handle unknown status here
+    }
+  }
+
+  Color getWorkloadStatusColor(String status) {
+    switch (status) {
+      case 'Light':
+        return const Color.fromARGB(255, 191, 255, 193);
+
+      case 'Moderate':
+        return const Color.fromARGB(255, 255, 250, 209);
+      case 'Normal':
+        return const Color.fromARGB(255, 255, 239, 215);
+      case 'Severe':
+      case 'Heavy':
+        return const Color.fromARGB(255, 255, 229, 227);
+      case 'Overload':
+        return const Color.fromARGB(255, 255, 182, 182);
+      default:
+        return Colors.white; // Default color or handle unknown status here
+    }
+  }
+
+    Color getWorStatusColor(String status) {
+    switch (status) {
+      case 'Online':
+        return const Color.fromARGB(255, 191, 255, 193);
+
+      case 'Offline':
+        return const Color.fromARGB(255, 227, 227, 227);
+      default:
+        return Colors.white; // Default color or handle unknown status here
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return _isLoading
         ? Container(
-          color: AppColors.secondaryColor,
-          child: Center(
-              child: LoadingAnimationWidget.fallingDot(
-                  color: AppColors.primaryColor, size: 60)),
-        )
+            color: AppColors.secondaryColor,
+            child: Center(
+                child: LoadingAnimationWidget.fallingDot(
+                    color: AppColors.primaryColor, size: 60)),
+          )
         : WillPopScope(
             onWillPop: _onBackPressed,
             child: RefreshIndicator(
               onRefresh: () async {
-                  _handleHealthData();
-                },
+                _handleHealthData();
+              },
               child: Scaffold(
                 appBar: AppBar(
                   backgroundColor: AppColors.primaryColor,
@@ -108,10 +156,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  automaticallyImplyLeading: false, // This hides the back button
+                  automaticallyImplyLeading:
+                      false, // This hides the back button
                   actions: [
                     PopupMenuButton(
-                      icon: const Icon(Icons.account_circle, color: Colors.white),
+                      icon:
+                          const Icon(Icons.account_circle, color: Colors.white),
                       itemBuilder: (BuildContext context) {
                         return [
                           const PopupMenuItem(
@@ -160,22 +210,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                           HomeStatCard(
                                             subTitle: _healthStatus,
                                             title: 'Health',
-                                            statBgColor:
-                                                AppColors.secondaryColor,
+                                            statBgColor: getHealthStatusColor(
+                                                _healthStatus),
                                           ),
                                           const SizedBox(width: 15.0),
                                           HomeStatCard(
                                             subTitle: _workLoad,
                                             title: 'Workload',
                                             statBgColor:
-                                                AppColors.secondaryColor,
+                                                getWorkloadStatusColor(_workLoad),
                                           ),
                                           const SizedBox(width: 15.0),
-                                           HomeStatCard(
+                                          HomeStatCard(
                                             subTitle: _workStatus,
                                             title: 'Status',
                                             statBgColor:
-                                                AppColors.secondaryColor,
+                                                getWorStatusColor(_workStatus),
                                           ),
                                         ],
                                       ),
