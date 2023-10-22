@@ -16,12 +16,15 @@ class _HomeScreenState extends State<HomeScreen> {
   final _authService = AuthService();
 
   String _healthStatus = 'N/A';
+  String _workLoad = 'N/A';
   List _healthTips = [];
   String _email = "";
 
   bool _isLoading = true;
 
   void _handleHealthData() async {
+    _isLoading = true;
+
     final email = await _authService.getUserEmail();
     if (mounted) {
       setState(() {
@@ -29,28 +32,17 @@ class _HomeScreenState extends State<HomeScreen> {
       });
     }
     final healthStatus = await _authService.getMentalStatus(email);
+    final workLoad = await _authService.getWorkLoad(email);
     final healthTips = await _authService.getUserMentalHealth(email);
 
     setState(() {
       _healthStatus = healthStatus;
+      _workLoad = workLoad;
       _healthTips = healthTips;
     });
 
     _isLoading = false;
   }
-
-  // Future<void> _geEmail() async {
-  //   try {
-  //     final email = await _authService.getUserEmail();
-  //     if (mounted) {
-  //       setState(() {
-  //         _email = email;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
 
   @override
   void initState() {
@@ -89,49 +81,52 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return _isLoading
-        ? Center(
-            child: LoadingAnimationWidget.fallingDot(
-                color: AppColors.primaryColor, size: 60))
+        ? Container(
+          color: AppColors.secondaryColor,
+          child: Center(
+              child: LoadingAnimationWidget.fallingDot(
+                  color: AppColors.primaryColor, size: 60)),
+        )
         : WillPopScope(
             onWillPop: _onBackPressed,
-            child: Scaffold(
-              appBar: AppBar(
-                backgroundColor: AppColors.primaryColor,
-                elevation: 0,
-                title: const Text(
-                  'Eudaimonia',
-                  style: TextStyle(
-                    color: AppColors.textColorDark,
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                automaticallyImplyLeading: false, // This hides the back button
-                actions: [
-                  PopupMenuButton(
-                    icon: const Icon(Icons.account_circle, color: Colors.white),
-                    itemBuilder: (BuildContext context) {
-                      return [
-                        const PopupMenuItem(
-                          value: 1,
-                          child: Text('Logout'),
-                        ),
-                      ];
-                    },
-                    onSelected: (value) {
-                      switch (value) {
-                        case 1:
-                          _authService.logout(context);
-                      }
-                    },
-                  ),
-                ],
-              ),
-              body: RefreshIndicator(
-                onRefresh: () async {
+            child: RefreshIndicator(
+              onRefresh: () async {
                   _handleHealthData();
                 },
-                child: SingleChildScrollView(
+              child: Scaffold(
+                appBar: AppBar(
+                  backgroundColor: AppColors.primaryColor,
+                  elevation: 0,
+                  title: const Text(
+                    'Eudaimonia',
+                    style: TextStyle(
+                      color: AppColors.textColorDark,
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  automaticallyImplyLeading: false, // This hides the back button
+                  actions: [
+                    PopupMenuButton(
+                      icon: const Icon(Icons.account_circle, color: Colors.white),
+                      itemBuilder: (BuildContext context) {
+                        return [
+                          const PopupMenuItem(
+                            value: 1,
+                            child: Text('Logout'),
+                          ),
+                        ];
+                      },
+                      onSelected: (value) {
+                        switch (value) {
+                          case 1:
+                            _authService.logout(context);
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                body: SingleChildScrollView(
                   child: Column(
                     children: [
                       Container(
@@ -166,21 +161,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 AppColors.secondaryColor,
                                           ),
                                           const SizedBox(width: 15.0),
-
+                                          HomeStatCard(
+                                            subTitle: _workLoad,
+                                            title: 'Workload',
+                                            statBgColor:
+                                                AppColors.secondaryColor,
+                                          ),
+                                          const SizedBox(width: 15.0),
                                           const HomeStatCard(
                                             subTitle: 'Busy',
                                             title: 'Status',
                                             statBgColor:
                                                 AppColors.secondaryColor,
                                           ),
-                                          const SizedBox(width: 15.0),
-                                          const HomeStatCard(
-                                            subTitle: 'Havy',
-                                            title: 'Workload',
-                                            statBgColor:
-                                                AppColors.secondaryColor,
-                                          ),
-                                          
                                         ],
                                       ),
                                     ),

@@ -13,7 +13,7 @@ class Routes {
       case '/home':
         return MaterialPageRoute(builder: (_) => HomeScreen());
       case '/leaves':
-        return MaterialPageRoute(builder: (_) => const LeavesScreen());
+        return MaterialPageRoute(builder: (_) => LeavesScreen());
       case '/complaints':
         return MaterialPageRoute(builder: (_) => const ComplaintsScreen());
       case '/survey':

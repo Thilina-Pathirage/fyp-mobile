@@ -129,6 +129,28 @@ class AuthService {
     }
   }
 
+    Future<String> getWorkLoad(String email) async {
+    try {
+      final url = Uri.parse('$baseUrl/api/users/by-email/$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> userData = json.decode(response.body);
+        final workLoad = userData['workLoad'];
+
+
+        final prefs = await SharedPreferences.getInstance();
+
+        await prefs.setString('workLoad', workLoad);
+        return workLoad;
+      } else {
+        throw Exception('Failed to fetch workLoad data: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch workLoad data: $e');
+    }
+  }
+
   Future<String> submitSurvey({
     email,
     workload,

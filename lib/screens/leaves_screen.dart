@@ -44,6 +44,8 @@ class _LeavesScreenState extends State<LeavesScreen> {
   }
 
   Future<void> _handleLeaves() async {
+          _isLoading = true;
+
     try {
       final email = await _authService.getUserEmail();
 
@@ -76,7 +78,6 @@ class _LeavesScreenState extends State<LeavesScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _getName();
     // _getEmail();
@@ -85,63 +86,72 @@ class _LeavesScreenState extends State<LeavesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppbar(title: 'My Leaves'),
-      floatingActionButton: CustomFloatingActionButton(
-        onPressed: () {
-          _showCreateLeaveDialog(context);
-        },
-        heroTag: 'Create Leave',
-        icon: Icons.add,
-        iconSize: 26,
-      ),
-      body: _isLoading ? Center(child: LoadingAnimationWidget.fallingDot(color: AppColors.primaryColor, size: 60)) :  leavesList.isNotEmpty ? SingleChildScrollView(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            _handleLeaves();
+    return RefreshIndicator(
+      onRefresh: () async {
+        _getName();
+
+        _handleLeaves();
+      },
+      child: Scaffold(
+        appBar: const CustomAppbar(title: 'My Leaves'),
+        floatingActionButton: CustomFloatingActionButton(
+          onPressed: () {
+            _showCreateLeaveDialog(context);
           },
-          child: Padding(
-            padding: const EdgeInsets.all(26.0),
-            child: Column(
-              children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      filterButton("All"),
-                      filterButton("Approved"),
-                      filterButton("Rejected"),
-                      filterButton("Pending"),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: defaultTextFieldHeightSpacing),
-                // Display filtered RecentLeavesCard widgets based on the selected filter
-                for (var leave in leavesList)
-                  if (selectedFilter == "All" || leave.status == selectedFilter)
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: InkWell(
-                        onLongPress: () {
-                          _showUpdateLeaveDialog(context, leave);
-                        },
-                        child: RecentLeavesCard(
-                          title:
-                              "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
-                          status: leave.status,
-                          icon: Icons.done,
-                        ),
+          heroTag: 'Create Leave',
+          icon: Icons.add,
+          iconSize: 26,
+        ),
+        body: _isLoading
+            ? Center(
+                child: LoadingAnimationWidget.fallingDot(
+                    color: AppColors.primaryColor, size: 60))
+            : leavesList.isNotEmpty
+                ? SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(26.0),
+                      child: Column(
+                        children: [
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                filterButton("All"),
+                                filterButton("Approved"),
+                                filterButton("Rejected"),
+                                filterButton("Pending"),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: defaultTextFieldHeightSpacing),
+                          // Display filtered RecentLeavesCard widgets based on the selected filter
+                          for (var leave in leavesList)
+                            if (selectedFilter == "All" ||
+                                leave.status == selectedFilter)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: InkWell(
+                                  onLongPress: () {
+                                    _showUpdateLeaveDialog(context, leave);
+                                  },
+                                  child: RecentLeavesCard(
+                                    title:
+                                        "${leave.startDate.year.toString()}/${leave.startDate.month.toString()}/${leave.startDate.day.toString()} to ${leave.endDate.year.toString()}/${leave.endDate.month.toString()}/${leave.endDate.day.toString()}",
+                                    status: leave.status,
+                                    icon: Icons.done,
+                                  ),
+                                ),
+                              ),
+                        ],
                       ),
                     ),
-              ],
-            ),
-          ),
-        ),
-      ) : const Center(
-        child: SizedBox(
-              child: Text('You can apply for leaves'),
-            ),
+                  )
+                : const Center(
+                    child: SizedBox(
+                      child: Text('You can apply for leaves'),
+                    ),
+                  ),
       ),
     );
   }
@@ -184,7 +194,7 @@ class _LeavesScreenState extends State<LeavesScreen> {
     );
   }
 
-    Future<void> _showUpdateLeaveDialog(BuildContext context, leave) async {
+  Future<void> _showUpdateLeaveDialog(BuildContext context, leave) async {
     await showDialog(
       context: context,
       builder: (BuildContext context) {
