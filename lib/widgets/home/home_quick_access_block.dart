@@ -40,7 +40,7 @@ class _HomeQuickAccessBlockState extends State<HomeQuickAccessBlock> {
                   width: 16,
                 ),
                 HomeQuickAccessCard(
-                  title: 'Take Survy',
+                  title: 'Take Survey',
                   icon: Icons.insert_drive_file_outlined,
                   onPressed: () {
                     Navigator.pushNamed(context, '/survey');
